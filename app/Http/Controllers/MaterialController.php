@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use App\Models\Material;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
+class MaterialController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): \Illuminate\Http\JsonResponse
     {
         return response()->json([
+            'data' => Material::all(),
             'status' => 'success',
-            'data' => Product::all()
         ]);
     }
 
@@ -24,15 +24,14 @@ class ProductController extends Controller
     public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|max:255|unique:products|string',
-            'code' => 'required|max:255|unique:products|string',
+            'name' => 'required|string|max:255',
         ]);
 
-        $product = Product::query()->create($validated);
+        $material = Material::query()->create($validated);
 
         return response()->json([
             'status' => 'success',
-            'data' => $product
+            'data' => $material
         ]);
     }
 
@@ -41,19 +40,19 @@ class ProductController extends Controller
      */
     public function show(int $id): \Illuminate\Http\JsonResponse
     {
-        $product = Product::query()->find($id);
+        $material = Material::query()->findOrFail($id);
 
-        if (!$product) {
+        if (!$material) {
             return response()->json([
-                'message' => 'Product not found!',
+                'data' => 'Material not found!',
                 'status' => 'error',
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Get product successfully!',
+            'message' => 'Get material successfully!',
             'status' => 'success',
-            'data' => $product
+            'data' => $material
         ]);
     }
 
@@ -62,25 +61,24 @@ class ProductController extends Controller
      */
     public function update(Request $request, int $id): \Illuminate\Http\JsonResponse
     {
-        $product = Product::query()->find($id);
+        $material = Material::query()->findOrFail($id);
 
-        if (!$product) {
+        if (!$material) {
             return response()->json([
-                'message' => 'Product not found!',
+                'data' => 'Material not found!',
                 'status' => 'error',
             ], 404);
         }
-
         $validated = $request->validate([
-            'name' => 'required|max:255|string',
-            'code' => 'required|max:255|string',
+            'name' => 'required|string|max:255|unique:materials'
         ]);
 
-        $product->update([$validated]);
+        $material->update([$validated]);
+
         return response()->json([
-            'message' => 'Product updated successfully!',
+            'message' => 'Material updated successfully!',
             'status' => 'success',
-            'data' => $product
+            'data' => $material
         ]);
     }
 
@@ -89,17 +87,17 @@ class ProductController extends Controller
      */
     public function destroy(int $id): \Illuminate\Http\JsonResponse
     {
-        $product = Product::query()->find($id);
-        if (!$product) {
+        $material = Material::query()->findOrFail($id);
+        if (!$material) {
             return response()->json([
-                'message' => 'Product not found!',
+                'data' => 'Material not found!',
                 'status' => 'error',
             ], 404);
         }
 
-        $product->delete();
+        $material->delete();
         return response()->json([
-            'message' => 'Product deleted successfully!',
+            'message' => 'Material deleted successfully!',
             'status' => 'success',
         ]);
     }
