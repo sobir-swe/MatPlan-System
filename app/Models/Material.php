@@ -12,4 +12,9 @@ class Material extends Model
     protected $fillable = ['name'];
 
     protected $hidden = ['id'];
+
+    public function product_materials(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProductMaterial::class);
+    }
 }

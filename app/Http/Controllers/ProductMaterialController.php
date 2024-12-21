@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Material;
+use App\Models\ProductMaterial;
 use Illuminate\Http\Request;
 
-class MaterialController extends Controller
+class ProductMaterialController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,8 +13,8 @@ class MaterialController extends Controller
     public function index(): \Illuminate\Http\JsonResponse
     {
         return response()->json([
-            'data' => Material::all(),
             'status' => 'success',
+            'data' => ProductMaterial::all()
         ]);
     }
 
@@ -24,14 +24,15 @@ class MaterialController extends Controller
     public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'product_id' => 'required|exists:products,id',
+            'material_id' => 'required|exists:materials,id',
         ]);
 
-        $material = Material::query()->create($validated);
+        $product_materials = ProductMaterial::query()->create($validated);
 
         return response()->json([
             'status' => 'success',
-            'data' => $material
+            'data' => $product_materials
         ]);
     }
 
@@ -40,19 +41,18 @@ class MaterialController extends Controller
      */
     public function show(int $id): \Illuminate\Http\JsonResponse
     {
-        $material = Material::query()->findOrFail($id);
+        $product_material = ProductMaterial::query()->find($id);
 
-        if (!$material) {
+        if (!$product_material) {
             return response()->json([
-                'data' => 'Material not found!',
                 'status' => 'error',
+                'message' => 'Product material not found!'
             ], 404);
         }
-
         return response()->json([
-            'message' => 'Get material successfully!',
+            'message' => 'Get product material successfully!',
             'status' => 'success',
-            'data' => $material
+            'data' => $product_material
         ]);
     }
 
@@ -61,24 +61,24 @@ class MaterialController extends Controller
      */
     public function update(Request $request, int $id): \Illuminate\Http\JsonResponse
     {
-        $material = Material::query()->findOrFail($id);
-
-        if (!$material) {
+        $product_material = ProductMaterial::query()->find($id);
+        if(!$product_material) {
             return response()->json([
-                'data' => 'Material not found!',
+                'message' => 'Product material not found!',
                 'status' => 'error',
             ], 404);
         }
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255'
+            'product_id' => 'required|exists:products,id',
+            'material_id' => 'required|exists:materials,id',
         ]);
 
-        $material->update($validated);
-
+        $product_material->update($validated);
         return response()->json([
-            'message' => 'Material updated successfully!',
+            'message' => 'Update product material successfully!',
             'status' => 'success',
-            'data' => $material
+            'data' => $product_material
         ]);
     }
 
@@ -87,17 +87,16 @@ class MaterialController extends Controller
      */
     public function destroy(int $id): \Illuminate\Http\JsonResponse
     {
-        $material = Material::query()->findOrFail($id);
-        if (!$material) {
+        $product_material = ProductMaterial::query()->find($id);
+        if(!$product_material) {
             return response()->json([
-                'data' => 'Material not found!',
+                'message' => 'Product material not found!',
                 'status' => 'error',
             ], 404);
         }
-
-        $material->delete();
+        $product_material->delete();
         return response()->json([
-            'message' => 'Material deleted successfully!',
+            'message' => 'Delete product material successfully!',
             'status' => 'success',
         ]);
     }

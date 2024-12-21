@@ -15,5 +15,8 @@ class Product extends Model
         'code'
     ];
 
-
+    public function product_materials(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProductMaterial::class);
+    }
 }
